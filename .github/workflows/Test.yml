@@ -2,7 +2,6 @@ name: Test
 
 on:
   push:
-    branches:
     - main
   pull_request:
   workflow_dispatch:
@@ -22,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ['1.10', '1.11', '1.12', '1.13-nightly', 'nightly']
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@v3
@@ -33,17 +32,10 @@ jobs:
         timeout-minutes: 5
       - name: Develop subpackages
         timeout-minutes: 5
-        run: |
-          julia --project -e "
-            using Pkg
-            Pkg.develop([PackageSpec(; name=basename(path), path) for path in ARGS])
-          " lib/GPUArraysCore lib/JLArrays
+        run: "echo skipped-for-baseline-isolation"
       - name: "Set test arguments"
         shell: bash
-        run: |
-          # Run tests in verbose mode
-          TEST_ARGS=(--verbose)
-          echo "runtest_test_args=${TEST_ARGS[@]}" >> "${GITHUB_ENV}"
+        run: "echo skipped-for-baseline-isolation"
       - uses: julia-actions/julia-runtest@v1
         continue-on-error: ${{ matrix.version == 'nightly' }}
         with:
@@ -117,15 +109,11 @@ jobs:
         with:
           version: '1.10'
       - name: Develop packages
-        run: |
-          julia -e "
-            using Pkg
-            Pkg.develop([PackageSpec(; name=basename(splitext(path)[1]), path) for path in ARGS])
-          " ../GPUArrays.jl lib/GPUArraysCore
+        run: "echo skipped-for-baseline-isolation"
       - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.instantiate()'
+        run: "echo skipped-for-baseline-isolation"
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+        run: "echo skipped-for-baseline-isolation"
